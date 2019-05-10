@@ -776,12 +776,18 @@ public class USBDASK
     public const ushort U2401_ColdJuction_Enable             = 1001;
     public const ushort U2401_ColdJuction_User_define        = 1002;
 
+    //public const string UDDASK_DLL_FILE_NAME = "usb-dask.dll";
+    //public const string UDDASK_THERMAL_DLL_FILE_NAME = "usbthermo.dll";
+#if x86
     public const string UDDASK_DLL_FILE_NAME = "usb-dask.dll";
-    public const string UDDASK_THERMAL_DLL_FILE_NAME = "usbthermo.dll";
-    
-/*----------------------------------------------------------------------------*/
-/* USB-DASK Function prototype                                               */
-/*----------------------------------------------------------------------------*/
+    public const string UDDASK_THERMAL_DLL_FILE_NAME = "usbthermal.dll";            
+#else
+    public const string UDDASK_DLL_FILE_NAME = "usb-dask64.dll";
+    public const string UDDASK_THERMAL_DLL_FILE_NAME = "usbthermal64.dll";
+#endif
+    /*----------------------------------------------------------------------------*/
+    /* USB-DASK Function prototype                                               */
+    /*----------------------------------------------------------------------------*/
     [DllImport(UDDASK_DLL_FILE_NAME)]
     public static extern short UD_Register_Card (ushort CardType, ushort card_num);
     [DllImport(UDDASK_DLL_FILE_NAME)]

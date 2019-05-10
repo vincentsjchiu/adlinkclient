@@ -40,8 +40,10 @@ namespace adlinkClient
             }
             else
             {
-                //string sr = "HAN2NC1003";
+                //string sr = "HAN2NC1001";
+                //byte[] sr= new byte[16];
                 //USBDASK.UD_Custom_Serial_Number_Write(cardNumber, Encoding.ASCII.GetBytes(sr));
+                //USBDASK.UD_Custom_Serial_Number_Write(cardNumber, sr);
                 USBDASK.UD_Custom_Serial_Number_Read(cardNumber, Read_SN_char);
                 if(Read_SN_char.All(singleByte => singleByte == 0))
                 {
