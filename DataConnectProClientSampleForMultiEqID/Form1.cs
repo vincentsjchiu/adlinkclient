@@ -18,7 +18,7 @@ namespace DataConnectProClientSampleForMultiEqID
             InitializeComponent();
         }
         bool initialSuccess = false;
-        bool sendDataSuccess = false;
+        int sendDataSuccess = 0;
         bool getEquipmentIDSuccess = false;
         ushort cardNumber = 0;//MCM-100 is always 0, if you connect to USB-2405,it will depends on the hardware configuration
         string username;
@@ -129,7 +129,7 @@ namespace DataConnectProClientSampleForMultiEqID
                 if (EqIds[i][0].ToString() != "")
                 {
                     sendDataSuccess = client.SendData(databyeqid(datainfo, EqIds[i][0].ToString(), EqIds[i].ToArray()));
-                    if (sendDataSuccess == false)
+                    if (sendDataSuccess != 0)
                     {
                         MessageBox.Show("SendData Fail");
                     }

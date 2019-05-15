@@ -33,8 +33,7 @@ namespace adlinkClient
             error = USBDASK.UD_Register_Card(USBDASK.USB_2405, cardNumber);
             if (error != USBDASK.NoError)
             {
-                System.Windows.Forms.MessageBox.Show("Please Connect ADLINK Device!");
-                
+                System.Windows.Forms.MessageBox.Show("Error:Please Connect ADLINK Device!");
                 deviceId = null;
                 return false;
             }
@@ -45,11 +44,11 @@ namespace adlinkClient
                 //USBDASK.UD_Custom_Serial_Number_Write(cardNumber, Encoding.ASCII.GetBytes(sr));
                 //USBDASK.UD_Custom_Serial_Number_Write(cardNumber, sr);
                 USBDASK.UD_Custom_Serial_Number_Read(cardNumber, Read_SN_char);
-                if(Read_SN_char.All(singleByte => singleByte == 0))
+                if (Read_SN_char.All(singleByte => singleByte == 0))
                 {
                     USBDASK.UD_Serial_Number_Read(cardNumber, Read_SN_char);
-                }                                
-                GatewayID = System.Text.Encoding.ASCII.GetString(Read_SN_char).Substring(0, 10);               
+                }
+                GatewayID = System.Text.Encoding.ASCII.GetString(Read_SN_char).Substring(0, 10);
                 deviceId = GatewayID;
                 USBDASK.UD_Release_Card(cardNumber);
                 Username = username;
@@ -59,9 +58,9 @@ namespace adlinkClient
                     cdsHelper = new CDSHelper(APIURL, GatewayID, GatewayPW, username, password);
                     cdsHelper.Connect().Wait();
                     cdsHelper.GetMessaegCatalogId().Wait();
-                    cdsHelper.ApplyMessage().Wait();                   
+                    cdsHelper.ApplyMessage().Wait();
                     gateway = new Gateway(CDSHelper._CDSClient, this);
-                    equipmentSendTime = new Dictionary<string, DateTime>();                   
+                    equipmentSendTime = new Dictionary<string, DateTime>();
                     currenteqId = "";
                 }
                 catch (Exception e)
@@ -88,15 +87,15 @@ namespace adlinkClient
             }
             return true;
         }
-        
-        public bool SendData(string jsonMessage)
-        {           
+
+        public int SendData(string jsonMessage)
+        {
             if (CDSHelper._CDSClient != null)
             {
                 try
                 {
                     currenttime = DateTime.UtcNow;
-                    js = new JObject();                   
+                    js = new JObject();
                     js = (JObject)JsonConvert.DeserializeObject(jsonMessage);
                     currenteqId = js["equipmentId"].ToString();
                     if (equipmentSendTime.ContainsKey(currenteqId) == false)
@@ -104,7 +103,7 @@ namespace adlinkClient
                         //send
                         equipmentSendTime.Add(currenteqId, currenttime);
                         gateway.SendMessage(jsonMessage);
-                        return true;
+                        return 0;
                     }
                     else
                     {
@@ -113,28 +112,34 @@ namespace adlinkClient
                             //send
                             equipmentSendTime[currenteqId] = currenttime;
                             gateway.SendMessage(jsonMessage);
-                            return true;
+                            return 0;
                         }
                         else
                         {
-                            System.Windows.Forms.MessageBox.Show("The time interval between two data need to be >= 10 seconds!");
-                            return false;
+                            //System.Windows.Forms.MessageBox.Show("The time interval between two data need to be >= 10 seconds!");
+                            Console.WriteLine("Error:The time interval between two data need to be >= 10 seconds!");
+                            return -10;
                         }
-                    }                                    
+                    }
                 }
                 catch (Exception ex)
                 {
-                    if (ex.Message.Contains("System.Security.Authentication.AuthenticationException"))
+                    /*if (ex.Message.Contains("System.Security.Authentication.AuthenticationException"))
                     {
-                        System.Windows.Forms.MessageBox.Show("Please Check Your System Date Time!");
+                        Console.WriteLine("Please Check Your System Date Time!");
+                        return -11;
+                    }*/
+                    if (ex.Message.Contains("Object reference not set to an instance of an object"))
+                    {
+                        Console.WriteLine("Error:Please Input Equipment ID");                        
                     }
-                    return false;
+                    return -11;
                 }
 
             }
             else
             {
-                return false;
+                return 0;
             }
 
 
@@ -146,7 +151,7 @@ namespace adlinkClient
             {
                 handler(this, e);
             }
-            
+
         }
         public event EventHandler<ReceiveEventArgs> MessageReached;
     }

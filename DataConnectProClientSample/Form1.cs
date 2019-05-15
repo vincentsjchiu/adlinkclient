@@ -21,7 +21,7 @@ namespace DataConnectProClientSample
             InitializeComponent();
         }
         bool initialSuccess=false ;
-        bool sendDataSuccess =false;
+        int sendDataSuccess =0;
         bool getEquipmentIDSuccess=false ;
         ushort cardNumber = 0;//MCM-100 is always 0, if you connect to USB-2405,it will depends on the hardware configuration
         string username;
@@ -88,7 +88,7 @@ namespace DataConnectProClientSample
             topicName["CH3_OA_I"] = "10 Hz to 1000 Hz";
             //Task.Run(() => sendDataSuccess = client.SendData(topicName.ToString()));
             sendDataSuccess = client.SendData(topicName.ToString());
-            if (sendDataSuccess == false)
+            if (sendDataSuccess != 0)
             {
                 MessageBox.Show("SendData Fail");
             }
