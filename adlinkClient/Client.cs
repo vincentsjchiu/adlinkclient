@@ -33,7 +33,7 @@ namespace adlinkClient
             error = USBDASK.UD_Register_Card(USBDASK.USB_2405, cardNumber);
             if (error != USBDASK.NoError)
             {
-                System.Windows.Forms.MessageBox.Show("Error:Please Connect ADLINK Device!");
+                Console.WriteLine("Error:Please Connect ADLINK Device!");
                 deviceId = null;
                 return -1;
             }
