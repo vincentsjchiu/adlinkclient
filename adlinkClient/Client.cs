@@ -28,21 +28,17 @@ namespace adlinkClient
         Gateway gateway;
         JObject js;
         public Dictionary<string, DateTime> equipmentSendTime;
-        public bool Initial(ushort cardNumber, string username, string password, string messageName, out string deviceId)
+        public int Initial(ushort cardNumber, string username, string password, string messageName, out string deviceId)
         {
             error = USBDASK.UD_Register_Card(USBDASK.USB_2405, cardNumber);
             if (error != USBDASK.NoError)
             {
                 System.Windows.Forms.MessageBox.Show("Error:Please Connect ADLINK Device!");
                 deviceId = null;
-                return false;
+                return -1;
             }
             else
             {
-                //string sr = "HAN2NC1001";
-                //byte[] sr= new byte[16];
-                //USBDASK.UD_Custom_Serial_Number_Write(cardNumber, Encoding.ASCII.GetBytes(sr));
-                //USBDASK.UD_Custom_Serial_Number_Write(cardNumber, sr);
                 USBDASK.UD_Custom_Serial_Number_Read(cardNumber, Read_SN_char);
                 if (Read_SN_char.All(singleByte => singleByte == 0))
                 {
@@ -65,13 +61,14 @@ namespace adlinkClient
                 }
                 catch (Exception e)
                 {
-                    return false;
+                    Console.WriteLine("Error:Connecting Fail!");
+                    return -2;
                 }
 
-                return true;
+                return 0;
             }
         }
-        public bool GetEquipmentID(out string[] equipmemtId)
+        public int GetEquipmentID(out string[] equipmemtId)
         {
             try
             {
@@ -82,10 +79,11 @@ namespace adlinkClient
             }
             catch
             {
+                Console.WriteLine("Error:Get Equipment ID Fail!");
                 equipmemtId = null;
-                return false;
+                return -20;
             }
-            return true;
+            return 0;
         }
 
         public int SendData(string jsonMessage)
@@ -116,7 +114,6 @@ namespace adlinkClient
                         }
                         else
                         {
-                            //System.Windows.Forms.MessageBox.Show("The time interval between two data need to be >= 10 seconds!");
                             Console.WriteLine("Error:The time interval between two data need to be >= 10 seconds!");
                             return -10;
                         }
@@ -131,7 +128,7 @@ namespace adlinkClient
                     }*/
                     if (ex.Message.Contains("Object reference not set to an instance of an object"))
                     {
-                        Console.WriteLine("Error:Please Input Equipment ID");                        
+                        Console.WriteLine("Error:Please Input Equipment ID!");
                     }
                     return -11;
                 }

@@ -15,13 +15,13 @@ namespace TestDLL
     {
         static void Main(string[] args)
         {
-            bool initialSuccess = false;
+            int initialSuccess = 0;
             int sendDataSuccess = 0;
-            bool receiveSuccess=false;
+            int receiveSuccess=0;
             //string jsonMessage = "{\"companyId\":28,\"msgTimestamp\":\"2019 - 05 - 15T19: 12:59.10Z\",\"equipmentId\":\"Compressor01\",\"equipmentRunStatus\":1,\"MessageName\":\"GMLite\",\"CH0_OA\":6,\"CH0_OA_I\":\"10 Hz to 1000 Hz\"}";
 
             string username = "test19";
-            string password = "garage";
+            string password = "garag";
             string messageName = "VCM";
             Client client = new Client();
             string equipmentid="Compressor03";
@@ -34,7 +34,7 @@ namespace TestDLL
             
             Console.WriteLine("Wait.....");
             topicName = new JObject();
-            //topicName["equipmentId"] = equipmentid;
+            topicName["equipmentId"] = equipmentid;
             topicName["equipmentRunStatus"] = 1;
             topicName["MessageName"] = messageName;
             topicName["CH0_OA"] = 4.5;
@@ -50,7 +50,7 @@ namespace TestDLL
             client.MessageReached += Client_MessageReached;
            
             Console.ReadKey();
-            if (initialSuccess == true)
+            if (initialSuccess == 0)
             {
                 for (int i = 0; i < 5; i++)
                 {

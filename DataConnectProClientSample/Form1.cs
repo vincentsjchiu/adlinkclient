@@ -20,9 +20,9 @@ namespace DataConnectProClientSample
         {
             InitializeComponent();
         }
-        bool initialSuccess=false ;
+        int initialSuccess=0 ;
         int sendDataSuccess =0;
-        bool getEquipmentIDSuccess=false ;
+        int getEquipmentIDSuccess=0 ;
         ushort cardNumber = 0;//MCM-100 is always 0, if you connect to USB-2405,it will depends on the hardware configuration
         string username;
         string password;
@@ -47,7 +47,7 @@ namespace DataConnectProClientSample
             password = this.textBoxPassword.Text;
             initialSuccess = client.Initial(cardNumber, username, password, messageName, out deviceId);
             this.textBoxDeviceID.Text = deviceId;
-            if (initialSuccess == true)
+            if (initialSuccess == 0)
             {
                 MessageBox.Show("Initial Success");
                 client.MessageReached += Client_MessageReached;
@@ -62,7 +62,7 @@ namespace DataConnectProClientSample
         {
             this.comboBox1.Items.Clear();
             getEquipmentIDSuccess = client.GetEquipmentID(out Equipment);
-            if (getEquipmentIDSuccess == true)
+            if (getEquipmentIDSuccess == 0)
             {
                 comboBox1.Items.AddRange(Equipment);
             }
