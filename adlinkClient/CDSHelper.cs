@@ -8,7 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Forms;
 namespace adlinkClient
 {
 
@@ -190,6 +190,7 @@ namespace adlinkClient
             try
             {
                 Microsoft.Azure.Devices.Client.TransportType protocol = Microsoft.Azure.Devices.Client.TransportType.Http1;
+                //MessageBox.Show("HTTP1");
                 switch (_IoTHubProtocol.ToLower())
                 {
                     case "amqp":
@@ -210,6 +211,7 @@ namespace adlinkClient
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                //MessageBox.Show(ex.ToString());
             }
             return true;
         }

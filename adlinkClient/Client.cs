@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
+//using System.Windows.Forms;
 namespace adlinkClient
 {
     public class Client
@@ -19,6 +19,7 @@ namespace adlinkClient
         public static string MessageName;
         public byte[] Read_SN_char = new byte[16];
         int error;
+        public int SendAsyncerror;
         public string SN_str;
         public string Controlstr;
         public string currenteqId, lasteqId;
@@ -39,7 +40,7 @@ namespace adlinkClient
             }
             else
             {
-                USBDASK.UD_Custom_Serial_Number_Read(cardNumber, Read_SN_char);
+                USBDASK.UD_Custom_Serial_Number_Read(cardNumber, Read_SN_char);               
                 if (Read_SN_char.All(singleByte => singleByte == 0))
                 {
                     USBDASK.UD_Serial_Number_Read(cardNumber, Read_SN_char);
@@ -58,6 +59,7 @@ namespace adlinkClient
                     gateway = new Gateway(CDSHelper._CDSClient, this);
                     equipmentSendTime = new Dictionary<string, DateTime>();
                     currenteqId = "";
+                    SendAsyncerror = 0;
                 }
                 catch (Exception e)
                 {
@@ -96,13 +98,23 @@ namespace adlinkClient
                     js = new JObject();
                     js = (JObject)JsonConvert.DeserializeObject(jsonMessage);
                     currenteqId = js["equipmentId"].ToString();
+                    //MessageBox.Show("Deserialize");
                     if (equipmentSendTime.ContainsKey(currenteqId) == false)
                     {
                         //send
                         equipmentSendTime.Add(currenteqId, currenttime);
                         gateway.SendMessage(jsonMessage);
+                        if(SendAsyncerror<0)
+                        {
+                            Console.WriteLine("Error:Send Data Timeout!");
+                            return SendAsyncerror;
+                        }
+                        else
+                        { 
+                        //MessageBox.Show("Send Data different id");
                         return 0;
-                    }
+                        }
+                    }                   
                     else
                     {
                         if ((currenttime - equipmentSendTime[currenteqId]).TotalSeconds > 8)
@@ -110,7 +122,16 @@ namespace adlinkClient
                             //send
                             equipmentSendTime[currenteqId] = currenttime;
                             gateway.SendMessage(jsonMessage);
-                            return 0;
+                            if (SendAsyncerror < 0)
+                            {
+                                Console.WriteLine("Error:Send Data Timeout!");
+                                return SendAsyncerror;
+                            }
+                            else
+                            {
+                                //MessageBox.Show("Send Data different id");
+                                return 0;
+                            }
                         }
                         else
                         {
@@ -128,14 +149,16 @@ namespace adlinkClient
                     }*/
                     if (ex.Message.Contains("Object reference not set to an instance of an object"))
                     {
-                        Console.WriteLine("Error:Please Input Equipment ID!");
+                        Console.WriteLine("Error:Please Input Equipment ID!");                        
                     }
                     return -11;
+                                        
                 }
 
             }
             else
             {
+                //MessageBox.Show("CDSClient is null");
                 return 0;
             }
 

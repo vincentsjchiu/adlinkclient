@@ -12,6 +12,7 @@ using adlinkClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Threading;
 namespace DataConnectProClientSample
 {
     public partial class Form1 : Form
@@ -20,9 +21,9 @@ namespace DataConnectProClientSample
         {
             InitializeComponent();
         }
-        int initialSuccess=0 ;
-        int sendDataSuccess =0;
-        int getEquipmentIDSuccess=0 ;
+        int initialSuccess = 0;
+        int sendDataSuccess = 0;
+        int getEquipmentIDSuccess = 0;
         ushort cardNumber = 0;//MCM-100 is always 0, if you connect to USB-2405,it will depends on the hardware configuration
         string username;
         string password;
@@ -34,7 +35,8 @@ namespace DataConnectProClientSample
         string deviceId;
         JObject topicName;
         JObject json;
-
+        bool flage = true;
+        Thread sddata;
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -74,7 +76,9 @@ namespace DataConnectProClientSample
 
         private void button1_Click(object sender, EventArgs e)
         {
-            topicName = new JObject();
+            sddata = new Thread(data);
+            sddata.Start();
+            /*topicName = new JObject();
             topicName["equipmentId"] = equipmentid;
             topicName["equipmentRunStatus"] = 1;
             topicName["MessageName"] = messageName;
@@ -90,10 +94,45 @@ namespace DataConnectProClientSample
             sendDataSuccess = client.SendData(topicName.ToString());
             if (sendDataSuccess != 0)
             {
-                MessageBox.Show("SendData Fail");
+                //MessageBox.Show("SendData Fail");
+                Console.WriteLine("SendData Fail");
+            }
+            else
+            {
+                Console.WriteLine("SendData Done");
+            }*/
+        }
+        private void data()
+        {
+            while (true)
+            {
+                topicName = new JObject();
+                topicName["equipmentId"] = equipmentid;
+                topicName["equipmentRunStatus"] = 1;
+                topicName["MessageName"] = messageName;
+                topicName["CH0_OA"] = 4.5;
+                topicName["CH0_OA_I"] = "10 Hz to 1000 Hz";
+                topicName["CH1_OA"] = 2.2;
+                topicName["CH1_OA_I"] = "10 Hz to 1000 Hz";
+                topicName["CH2_OA"] = 3.6;
+                topicName["CH2_OA_I"] = "10 Hz to 1000 Hz";
+                topicName["CH3_OA"] = 7.5;
+                topicName["CH3_OA_I"] = "10 Hz to 1000 Hz";
+                //Task.Run(() => sendDataSuccess = client.SendData(topicName.ToString()));
+                sendDataSuccess = client.SendData(topicName.ToString());
+                if (sendDataSuccess != 0)
+                {
+                    //MessageBox.Show("SendData Fail");
+                    Console.WriteLine("SendData Fail");
+                }
+                else
+                {
+                    Console.WriteLine("SendData Done");
+                }
+                //Application.DoEvents();
+                Thread.Sleep(10000);
             }
         }
-
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             equipmentid = Convert.ToString(comboBox1.SelectedItem);
@@ -115,4 +154,4 @@ namespace DataConnectProClientSample
         }
 
     }
-}   
+}
