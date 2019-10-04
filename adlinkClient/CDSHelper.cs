@@ -206,6 +206,7 @@ namespace adlinkClient
                 if (_CDSClient == null)
                 {
                     _CDSClient = DeviceClient.Create(_IoTHubName, new DeviceAuthenticationWithRegistrySymmetricKey(_IoTDeviceID, _IoTDeviceKey), protocol);
+                    _CDSClient.OperationTimeoutInMilliseconds = 86400000;
                 }
             }
             catch (Exception ex)
